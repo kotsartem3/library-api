@@ -176,10 +176,10 @@ class TestBooksFilter:
         assert response.get_json() == []
 
     def test_create_book_default_status(self, client):
-    """Книга створюється зі статусом за замовчуванням"""
-    response = client.post("/api/books", json={
-        "title": "Test Book",
-        "created_by": "Коць Артем",
-    })
+        """Книга створюється зі статусом за замовчуванням"""
+        response = client.post("/api/books", json={
+            "title": "Test Book",
+            "created_by": "Коць Артем",
+        })
 
-    assert response.status_code == 201
+        assert response.status_code == 201
