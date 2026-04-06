@@ -1,21 +1,22 @@
+import os
 import pytest
 import psycopg2
 from app import create_app
 
 TEST_DB_CONFIG = {
-    "host": "127.0.0.1",
-    "port": 55432,
-    "dbname": "library_test_db",
-    "user": "postgres",
-    "password": "secret",
+    "host": os.environ.get("POSTGRES_HOST", "localhost"),
+    "port": int(os.environ.get("POSTGRES_PORT", "5432")),
+    "dbname": os.environ.get("POSTGRES_DB", "library_test_db"),
+    "user": os.environ.get("POSTGRES_USER", "postgres"),
+    "password": os.environ.get("POSTGRES_PASSWORD", "secret"),
 }
 
 ADMIN_DB_CONFIG = {
-    "host": "127.0.0.1",
-    "port": 55432,
+    "host": os.environ.get("POSTGRES_HOST", "localhost"),
+    "port": int(os.environ.get("POSTGRES_PORT", "5432")),
     "dbname": "postgres",
-    "user": "postgres",
-    "password": "secret",
+    "user": os.environ.get("POSTGRES_USER", "postgres"),
+    "password": os.environ.get("POSTGRES_PASSWORD", "secret"),
 }
 
 
@@ -36,11 +37,14 @@ def test_db():
     admin_conn.autocommit = True
 
     with admin_conn.cursor() as cur:
-        cur.execute("""
+        cur.execute(
+            """
             SELECT pg_terminate_backend(pid)
             FROM pg_stat_activity
             WHERE datname = %s AND pid <> pg_backend_pid()
-        """, (TEST_DB_CONFIG["dbname"],))
+            """,
+            (TEST_DB_CONFIG["dbname"],)
+        )
         cur.execute("DROP DATABASE IF EXISTS library_test_db")
 
     admin_conn.close()
