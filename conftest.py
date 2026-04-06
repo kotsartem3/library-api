@@ -1,5 +1,5 @@
 import pytest
-import psycopg
+import psycopg2
 from app import create_app
 
 TEST_DB_CONFIG = {
@@ -21,7 +21,7 @@ ADMIN_DB_CONFIG = {
 
 @pytest.fixture(scope="session")
 def test_db():
-    admin_conn = psycopg.connect(**ADMIN_DB_CONFIG)
+    admin_conn = psycopg2.connect(**ADMIN_DB_CONFIG)
     admin_conn.autocommit = True
 
     with admin_conn.cursor() as cur:
@@ -32,7 +32,7 @@ def test_db():
 
     yield TEST_DB_CONFIG
 
-    admin_conn = psycopg.connect(**ADMIN_DB_CONFIG)
+    admin_conn = psycopg2.connect(**ADMIN_DB_CONFIG)
     admin_conn.autocommit = True
 
     with admin_conn.cursor() as cur:
@@ -55,7 +55,7 @@ def app(test_db):
 
 @pytest.fixture(scope="function")
 def client(app):
-    conn = psycopg.connect(**app.config["DB_CONFIG"])
+    conn = psycopg2.connect(**app.config["DB_CONFIG"])
     conn.autocommit = True
 
     with conn.cursor() as cur:
